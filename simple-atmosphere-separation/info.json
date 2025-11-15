@@ -1,0 +1,21 @@
+{
+    "name": "simple-atmosphere-separation",
+    "version": "0.0.1",
+    "title": "Simple Atmospheric Separation",
+    "author": "Primeruler",
+    "factorio_version": "2.0",
+    "description": "Adds A Recipe To Get Nitrogen And Oxygen From The Atmosphere. Optional Venting As Well",
+    "settings": ["settings.lua"],
+    "homepage":"https://github.com/ThePrimeruler/space-age-machine-tiers",
+    "dependencies": [
+        "base",
+        "? space-age",
+        "? angelspetrochem",
+        "? Krastorio2",
+        "? Bio_Industries",
+        "? skewer_planet_vesta",
+        "? Paracelsin",
+        "? maraxsis"
+    ],
+    "space_travel_required": true
+}
