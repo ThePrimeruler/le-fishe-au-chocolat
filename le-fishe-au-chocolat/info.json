@@ -6,7 +6,7 @@
     "factorio_version": "2.0",
     "description": "Adds Le Fishe Au Chocolat To The Game",
     "settings": ["settings.lua"],
-    "homepage":"", 
+    "homepage":"https://github.com/ThePrimeruler/le-fishe-au-chocolat", 
     "dependencies": [
         "base",
         "? space-age"
