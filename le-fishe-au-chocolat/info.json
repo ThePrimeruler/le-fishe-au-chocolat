@@ -1,0 +1,14 @@
+{
+    "name": "le-fishe-au-chocolat",
+    "version": "0.0.1",
+    "title": "Le Fishe Au Chocolat",
+    "author": "Primeruler",
+    "factorio_version": "2.0",
+    "description": "Adds Le Fishe Au Chocolat To The Game",
+    "settings": ["settings.lua"],
+    "homepage":"", 
+    "dependencies": [
+        "base",
+        "? space-age"
+    ]
+}

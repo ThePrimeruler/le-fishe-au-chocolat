@@ -24,7 +24,14 @@ end
 ---@param ... data.LocalisedString parameters to the key
 ---@return localisedStringBuilder
 function localisedStringBuilder.createLocale(key, ...)
-    return localisedStringBuilder.new({ key, ... })
+    local vals = {key}
+    local params = {...}
+    if params then
+        for _, value in ipairs(params) do
+            vals[#vals+1] = value
+        end
+    end
+    return localisedStringBuilder.new(vals)
 end
 
 ---Internal Function, Takes Possible LocalisedString Formats and Makes them one format

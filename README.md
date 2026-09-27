@@ -1,3 +1,3 @@
-# Simple Atmospheric Separation
+# le-fishe-au-chocolat
 
-Adds A Recipe To Get Nitrogen And Oxygen From The Atmosphere. Optional Venting As Well
+Adds Le Fishe Au Chocolat To The Game

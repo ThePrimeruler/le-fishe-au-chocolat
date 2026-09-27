@@ -40,6 +40,7 @@ function iconBuilder:isEmpty()
     return #self.icons == 0
 end
 
+---Gets The Prototype's Icon Data And Proccesses It Into An Icon Builder
 ---@param proto data.Prototype
 ---@return iconBuilder
 function iconBuilder.getIconsFromProto(proto)
@@ -75,6 +76,7 @@ function iconBuilder:toIcons()
     return self:getIcons()
 end
 
+---Sets The Input Proto's Icon To Be This Icon
 ---@param proto data.Prototype
 ---@return null
 function iconBuilder:setProtoIcons(proto)
@@ -83,6 +85,7 @@ function iconBuilder:setProtoIcons(proto)
     end
     proto.icon = nil
     proto.icons = self.icons
+    return proto
 end
 
 --- Class To Create And Manage Icon Layers
@@ -157,6 +160,7 @@ function iconBuilder.singleIconLayer:tint_icon(color)
         error('`iconBuilder.singleIconLayer:tint`: color value "'..tostring(color)..'" is of incorrect length. Consider using `iconBuilder.genColor`')
     end
     self.tint = color
+    return self
 end
 --- Shifts the icon by x and y pixels. Adds To Previous Shifts. Typically, Icons Start In The Center.
 ---@param x number Positive x goes east (Right)
@@ -170,6 +174,7 @@ function iconBuilder.singleIconLayer:shift_pixels(x, y)
         return
     end
     self.shift = {x+self.shift[1], y+self.shift[2]}
+    return self
 end
 --- Scales the icon by scale. Multiplies Previous Scales.
 ---@param scale number Double.
@@ -182,6 +187,7 @@ function iconBuilder.singleIconLayer:scale_icon(scale)
         return
     end
     self.scale_icon = self.scale_icon * scale
+    return self
 end
 --- Adds draw_background = true if no value given. First Layer defaults to true
 --- @param bool boolean optional
@@ -191,6 +197,7 @@ function iconBuilder.singleIconLayer:draw_background_icon(bool)
         return
     end
     self.draw_background = bool
+    return self
 end
 --- Adds floating = true if no value given.
 --- When true the layer is not considered for calculating bounds of the icon, so it can go out of bounds of rectangle into which the icon is drawn in GUI.
@@ -201,6 +208,7 @@ function iconBuilder.singleIconLayer:floating_icon(bool)
         return
     end
     self.floating = bool
+    return self
 end
 
 --- Internal Function, Takes Possible IconData Formats and Makes them one format
@@ -302,10 +310,10 @@ function iconBuilder:getIconsSize()
             local ic_top = shift[2]-size2
             local ic_btm = shift[2]+size2
 
-            local lft = lft<ic_lft and lft or ic_lft -- update global edges
-            local rgt = rgt<ic_rgt and rgt or ic_rgt
-            local top = top<ic_top and top or ic_top
-            local btm = btm<ic_btm and btm or ic_btm
+            lft = (lft < ic_lft) and lft or ic_lft -- update global edges
+            rgt = (rgt > ic_rgt) and rgt or ic_rgt
+            top = (top < ic_top) and top or ic_top
+            btm = (btm > ic_btm) and btm or ic_btm
         end
     end
     -- find final size
@@ -403,116 +411,134 @@ end
 
 --- Formats `formatted_icons` to exist in the Top Left at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatTopLeft(formatted_icons)
+function iconBuilder:formatTopLeft(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, -offset, -offset)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Top Right at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatTopRight(formatted_icons)
+function iconBuilder:formatTopRight(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, offset, -offset)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Top Center at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatTopCenter(formatted_icons)
+function iconBuilder:formatTopCenter(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, 0.0, -offset)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Center at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatCenter(formatted_icons)
+function iconBuilder:formatCenter(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Center Left at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatCenterLeft(formatted_icons)
+function iconBuilder:formatCenterLeft(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, -offset, 0.0)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Center Right at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatCenterRight(formatted_icons)
+function iconBuilder:formatCenterRight(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, offset, 0.0)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Bottom Left at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatBottomLeft(formatted_icons)
+function iconBuilder:formatBottomLeft(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, -offset, offset)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Bottom Right at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatBottomRight(formatted_icons)
+function iconBuilder:formatBottomRight(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4)
     normalized_icons = self:formatShiftRelative(normalized_icons, offset, offset)
     return normalized_icons
 end
 --- Formats `formatted_icons` to exist in the Bottom Center at a reduced size
 ---@param formatted_icons iconBuilder
+---@param sub_icon_scale float the scale `formatted_icons` icon will be scaled to. Defaults if not given.
 ---@return iconBuilder formatted_icons
-function iconBuilder:formatBottomCenter(formatted_icons)
+function iconBuilder:formatBottomCenter(formatted_icons, sub_icon_scale)
     if formatted_icons == nil then
         error('received a nil value for formatted_icons')
     end
+    local new_scale = sub_icon_scale or icon_small_ratio
     local normalized_icons = iconBuilder.new(iconBuilder.normalizeIconData(formatted_icons))
-    normalized_icons = self:formatScaleCorner(normalized_icons)
-    local offset = .5 - (icon_small_ratio/2)
+    normalized_icons = self:formatScaleRelative(normalized_icons, new_scale)
+    local offset = .25 - ((1.5*new_scale)/4) 
     normalized_icons = self:formatShiftRelative(normalized_icons, 0.0, offset)
     return normalized_icons
 end
